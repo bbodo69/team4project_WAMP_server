@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="issue">
+  	
+  	<!--  전체 게시글 개수 가져오기 -->
+	<select id = "countAll" resultType = "int">
+		select count(*) from issue
+	</select>
+	
+	
+	<!-- 범위에 맞는 게시글들 가져오기 -->
+	<select id = "selectAll" parameterType = "hashmap" resultType = "issueVO">
+		<![CDATA[
+		select num, link, content, tda, tdb, tdc, pre, reg, readcount, r 
+		from (select num, link, content, tda, tdb, tdc, pre, reg, readcount, rownum r 
+		from (select num, link, content, tda, tdb, tdc, pre, reg, readcount 
+		from issue)) where r >= #{start} and r <= #{end}
+		]]>
+	</select>
+	
+	
+	<!-- 기사 클릭시 그 기사 데이터 가져오기 -->
+	<select id = "selectOne" parameterType = "int" resultType = "issueVO">
+		select * from issue where num = #{value}
+	</select>
+	
+	<!-- 기사 수정하기 -->
+	<update id = "updateArticle" parameterType = "issueVO">
+		update issue set (link, content, pre) where num = #{num}
+	</update>
+	
+	
+	<!-- 게시글 삭제 -->
+	<delete id="deleteOne" parameterType="int">
+		delete from issue where num=#{num}
+	</delete>
+	
+	<!-- 글 저장 -->
+	<insert id = "insertArticle" parameterType = "issueVO">
+		insert into issue(num, link, content, tda, tdb, tdc, pre, reg, readcount) values(issue_seq.nextVal, #{link}, #{content}, #{tda}, #{tdb}, #{tdc}, #{pre}, now(), 0)
+	</insert>
+	
+	
+	<!-- 게시글의 num 값중 최대값 구하기 -->
+	<select id = "maxNum" resultType = "String">
+		select max(num) from issue
+	</select>
+	
+	
+	<!-- 기존 답글 re_step 올리기 
+	<update id = "updateReStep" parameterType = "hashmap">
+		<![CDATA[
+		update issue set re_step = re_step + 1 where ref = #{ref} and re_step > #{re_step}
+		]]>
+	</update>-->
+	
+	
+	<!-- 언론사 클릭해서 들어갈때 언론사 조회수 올리기 -->
+	<update id = "updateReadcount" parameterType = "int">
+		update issue set readcount = readcount + 1 where num = #{value}
+	</update>
+	
+	
+	<!-- DB에서 글의 pw 가져오기 -->
+	<select id = "selectPw" parameterType = "int" resultType = "String">
+		select pw from issue where num = #{value}
+	</select>
+	
+	
+	<!-- 투표했을 때 여당쪽 데이터 가져오기 -->
+	<select id = "getTdaCount" parameterType = "int" resultType = "int">
+  		select tda from issue where num = #{num}
+  	</select>
+  	
+  	
+  	<!-- 투표했을 때 야당쪽 데이터 가져오기 -->
+	<select id = "getTdcCount" parameterType = "int" resultType = "int">
+  		select tdc from issue where num = #{num}
+  	</select>
+  	
+  	
+  	<!-- 투표했을 때 중립쪽 데이터 가져오기 -->
+	<select id = "getTdbCount" parameterType = "int" resultType = "int">
+  		select tdb from issue where num = #{num}
+  	</select>
+  	
+  	
+  	<!-- 여당쪽 데이터에 +1 해주기 -->
+  	<update id="plusTdaCount" parameterType="int">
+  		update issue set tda = #{count} where num=#{num} 
+  	</update>
+  	
+  	
+  	<!-- 야당쪽 데이터에 +1 해주기 -->
+  	<update id="plusTdcCount" parameterType="int">
+  		update issue set tdc = #{count} where num=#{num} 
+  	</update>
+  	
+  	
+  	<!-- 중립쪽 데이터에 +1 해주기 -->
+  	<update id="plusTdbCount" parameterType="int">
+  		update issue set tdb = #{count} where num=#{num} 
+  	</update>
+  	
+  	
+  	<!-- 쓴 댓글 DB에 저장시켜주기 -->
+  	<insert id = "insertReple" parameterType = "issueVO"> 
+  		insert into rep values(rep_seq.nextval, #{num}, '', #{content}, 0, 0, now(), #{td}, #{writer}) 
+  	</insert>
+  	
+  	
+  	<!-- 리플의 전체 개수 가져오기 -->
+  	<select id="repleCount" parameterType="map" resultType="int">
+  		select count(*) from rep where ref=#{num}
+  	</select>
+  	
+  	
+  	<!-- 이슈리플 DB에서 모든 내용 들고오기 -->
+  	<select id="selectRepleList" parameterType="int" resultType="issueVO">
+  		select * from rep where ref=#{num} order by reg desc
+  	</select>
+  	
+  	
+  	<!-- 리플의 전체내용 들고오기 -->
+  	<select id = "repleSelectAll" parameterType="hashMap" resultType="issueVO">  		
+  		<![CDATA[
+  			select num, ref, ben, content, re_level, re_step, reg, td, writer, r 
+  			from (select num, ref, ben, content, re_level, re_step, reg, td, writer, rownum r 
+  			from (select num, ref, ben, content, re_level, re_step, reg, td, writer, rownum r 
+  			from rep order by reg desc) order by reg desc)
+  			where r >= #{start} and r <=#{end} order by reg desc
+  		]]> 
+  	</select>
+  	
+  	
+  	<!-- 투표 체크 -->
+  	<select id="checkVote" parameterType="map" resultType="int">
+  		select count(*) from rep where ref=#{num} and writer=#{sId}
+  	</select>
+  	
+  	
+  	<!-- AJAX로 달았던 댓글 삭제하기 -->
+  	<delete id="deleteReple" parameterType="issueVO">
+  		delete from rep where num=#{num}
+  	</delete>
+  	
+  	
+  	<!-- 해당 num값을 가지고 있는 ref값 가져오기 -->
+  	<select id="getRef" parameterType="issueVO" resultType="int">
+  		select ref from rep where num=#{num}
+  	</select>
+  	
+  	
+  	<!-- 해당 num값을 가지고 있는 td값 가져오기 -->
+  	<select id="getVote" parameterType="issueVO" resultType="int">
+  		select td from rep where num=#{num}
+  	</select>
+  	
+  	
+  	<update id="minusTda" parameterType="int">
+  		update issue set tda = tda -1 where num = #{ref}
+  	</update>
+  	
+  	
+  	<update id="minusTdb" parameterType="int">
+  		update issue set tdb = tdb -1 where num = #{ref}
+  	</update>
+  	
+  	
+  	<update id="minusTdc" parameterType="int">
+  		update issue set tdc = tdc -1 where num = #{ref}
+  	</update>
+  	
+  	<select id="getList" resultType="issueVO">
+  		<![CDATA[
+  		select * from issue order by num desc limit 0, 5 
+  		]]>
+  	</select>
+  
+</mapper>
+
+
+
+
+
+
+
+
+

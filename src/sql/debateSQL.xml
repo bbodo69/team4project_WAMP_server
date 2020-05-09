@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="debate">
+
+  	<select id="countAll" resultType="int">
+  		select count(*) from debate
+  	</select>
+  	
+<!--   	
+  	<select id = "selectAll" parameterType="hashMap" resultType="debateVO">
+  		<![CDATA[
+  			select num, sub, link, ok, nok, reg, readcount, r
+  			from (select num, sub, link, ok, nok, reg, readcount, rownum r
+  			from (select num, sub, link, ok, nok, reg, readcount, rownum r
+  			from debate order by reg desc) order by reg)
+  			where r >= #{start} and r <=#{end} order by reg desc  		
+  		]]>
+  	</select>
+ -->
+  	
+	<select id="selectAll" parameterType="hashMap" resultType="debateVO">
+  		select * from debate order by num desc limit #{start}, 10
+  	</select>  	
+<!--  	
+ 	<select id = "selectAll" parameterType="hashMap" resultType="debateVO">
+  			select * from debate order by num desc
+  	</select>
+ -->  	
+  	<insert id="insertDebate" parameterType="debateVO">
+  		insert into debate (sub, link, ok, nok, reg, readcount) values(#{sub}, #{link}, 0, 0, now(), 0)
+  	</insert>
+  
+  	<select id="getArticle" parameterType="int" resultType="debateVO">
+  		select * from debate where num=#{num}  		
+  	</select>
+  
+  	<select id="getReadcount" parameterType="int" resultType="int">
+  		select readcount from debate where num=#{num}  	
+  	</select>
+  	
+  	<insert id="insertReple" parameterType="debateVO"> 
+  		insert into reple (ref, content, ben, re_level, re_step, reg, writer, ok, favorite, hate, ref2) values(#{num}, #{content}, '', 0, 0, now(), #{writer}, #{ok}, 0, 0,#{ref2})
+  	</insert>
+  	
+  	<select id="getOkCount" parameterType="int" resultType="int">
+  		select ok from debate where num=#{ref}
+  	</select>
+
+  	<select id="getNokCount" parameterType="int" resultType="int">
+  		select nok from debate where num=#{ref}
+  	</select>
+  
+  	<update id="plusOkCount" parameterType="int">
+  		update debate set ok = #{count} where num=#{num} 
+  	</update>
+  
+  	<update id="plusNokCount" parameterType="int">
+  		update debate set Nok = #{count} where num=#{num}
+  	</update>
+  	
+  	<update id="plusReadCount" parameterType="map">
+  		update debate set readcount = #{readcount} where num=#{num}
+  	</update>
+  	
+  	<select id="repleCount" parameterType="map" resultType="int">
+  		select count(*) from reple where ref=#{num}
+  	</select>
+  	
+  	<select id="selectRepleList" parameterType="int" resultType="debateVO">
+  		select * from reple where ref=#{num} order by reg desc
+  	</select>
+  	
+  	<!-- https://blog.sonim1.com/79 mysql 에서 rownum 이용 방법--> 
+  	
+  	<select id = "repleSelectAll" parameterType="hashMap" resultType="debateVO">  		
+  		select * from reple where ref=#{num} order by num desc limit #{start}, #{end}
+  	</select>
+<!--   	
+  	<select id = "repleSelectAll" parameterType="hashMap" resultType="debateVO">  		
+  		<![CDATA[
+  			select num, ref, content, ben, re_level, re_step, reg, writer, ok, r
+  			from (select num, ref, content, ben, re_level, re_step, reg, writer, ok, rownum r
+  			from (select num, ref, content, ben, re_level, re_step, reg, writer, ok, rownum r
+  			from reple where ref=#{num} order by ref2 desc, re_level, re_step))
+  			where r >= #{start} and r <=#{end}
+  		]]>  	
+  	</select>
+-->  	
+  	
+  	<select id="checkVote" parameterType="map" resultType="int">
+  		select count(*) from reple where ref=#{num} and writer=#{sId}
+  	</select>
+  	
+  	<delete id="deleteReple" parameterType="debateVO">
+  		delete from reple where num=#{num}
+  	</delete>
+  	
+  	<select id="getRef" parameterType="debateVO" resultType="int">
+  		select ref from reple where num=#{num}
+  	</select>
+  	
+  	<select id="getVote" parameterType="debateVO" resultType="int">
+  		select ok from reple where num=#{num}
+  	</select>
+  	
+  	<update id="minusOk" parameterType="int">
+  		update debate set ok = ok -1 where num = #{ref}
+  	</update>
+  	
+  	<update id="minusNok" parameterType="int">
+  		update debate set nok = nok -1 where num = #{ref}
+  	</update>
+  	
+  	<insert id="like" parameterType="map">
+  		insert into like_unlike (writer, click, refdebate, refreple) values (#{sId}, 1, #{ref}, #{num})
+  	</insert>
+  	
+  	<insert id="unlike" parameterType="map">
+  		insert into like_unlike (writer, click, refdebate, refreple) values (#{sId}, -1, #{ref}, #{num})
+  	</insert>
+  	
+  	<delete id="likeCancel" parameterType="map">
+  		delete from like_unlike where writer=#{sId} and refdebate=#{ref} and refreple=#{num}
+  	</delete>
+  	
+  	<delete id="unlikeCancel" parameterType="map">
+  		delete from like_unlike where writer=#{sId} and refdebate=#{ref} and refreple=#{num}
+  	</delete>
+  	
+  	<select id="checkLike" parameterType="map" resultType="int">
+  		select click from like_unlike where refdebate=#{num} and refreple=#{ref} and writer=#{sId}
+  	</select>
+  	
+  	<select id="likeCount" parameterType="map" resultType="int">
+  		select count(*) from like_unlike where refdebate=#{num} and refreple=#{ref} and click=1
+  	</select>
+  	
+  	<select id="unlikeCount" parameterType="map" resultType="int">
+  		select count(*) from like_unlike where refdebate=#{num} and refreple=#{ref} and click=-1
+  	</select>
+  	
+  	<select id="getLevel" parameterType="debateVO" resultType="int">
+  		select re_level from reple where num=#{num}
+  	</select>
+  	
+  	<select id="getStep" parameterType="debateVO" resultType="int">
+  		select re_step from reple where num=#{num}
+  	</select>
+  	
+  	<select id="getRef2" parameterType="debateVO" resultType="int">
+  		select ref2 from reple where num=#{num}
+  	</select>
+  	
+  	<select id="maxGetLevel" parameterType="debateVO" resultType="int">
+  		select max(re_level) from reple where ref2=#{ref2}
+  	</select>
+  	
+  	<select id="maxGetStep" parameterType="debateVO" resultType="int">
+  		select max(re_step) from reple where ref2=#{ref2} and re_level = #{re_level}
+  	</select>
+  	
+  	<insert id="insertStep" parameterType="debateVO">
+  		insert into reple (ref, content, ben, re_level, re_step, reg, writer, ok, favorite, hate, ref2) values(#{ref}, #{content}, '', #{re_level}, #{re_step}, now(), #{writer}, #{ok}, 0, 0, #{ref2})
+  	</insert>
+  	
+  	<insert id="insertLevel" parameterType="debateVO">
+  		insert into reple (ref, content, ben, re_level, re_step, reg, writer, ok, favorite, hate, ref2) values(#{ref}, #{content}, '', #{re_level}, 0, now(), #{writer}, #{ok}, 0, 0, #{ref2})
+  	</insert>
+  	
+  	<select id="topOkView" parameterType="debateVO" resultType="debateVO">
+<!--
+   		select * from (select * from reple where ref = #{num} order by favorite desc) where rownum = 1
+ 
+  		select * from (select * from reple where ref = #{num} order by favorite desc limit 0,1)
+-->
+  		select * from reple where ref=#{num} order by favorite desc limit 0,1; 
+  	</select>
+  	
+  	<select id="topNokView" parameterType="debateVO" resultType="debateVO">
+<!-- 
+  		select * from (select * from reple where ref = #{num} order by hate desc) where rownum = 1
+ 
+ 		select * from (select * from reple where ref = #{num} order by hate desc limit 0,1)
+--> 		
+ 		select * from reple where ref=#{num} order by hate desc limit 0,1
+  	</select>
+  	
+  	<update id="updateLike" parameterType="map">
+  		update reple set favorite = #{count} where num = #{ref}
+  	</update>
+
+  	<update id="updateUnlike" parameterType="map">
+  		update reple set hate = #{count} where num = #{ref}
+  	</update>
+  	
+  	<select id="getList" resultType="debateVO">
+<!-- 
+  		<![CDATA[ 
+  		select * from debate where rownum >= 1 and rownum <= 5 order by num desc
+  		]]>
+ -->  		
+ 		select * from debate order by num desc limit 0, 5 
+  	</select>
+  	
+  	<select id="getOk" parameterType="debateVO" resultType="int">
+  		select ok from reple where num = #{num}
+  	</select>
+  	
+  	<select id="getRepleNum" resultType="int">
+  		select max(num)+1 from reple
+  	</select>
+  	
+  </mapper>
+ 

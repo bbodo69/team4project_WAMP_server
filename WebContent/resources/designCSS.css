@@ -1,0 +1,25 @@
+@charset "UTF-8";
+
+* {
+	
+}
+
+.header{
+	justify-content: center;
+}
+
+.footer{
+	justify-content: center;
+}
+
+.pagination{
+	justify-content: center;
+}
+
+.container_wrapper{
+	height: 100px;
+}
+
+.navbar-toggler-icon{
+	background-color: darkred;
+}

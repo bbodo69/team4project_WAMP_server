@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-4.3.xsd"
+	>
+	
+<!--	
+ 		<bean id = "dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close"
+		p:driverClassName="oracle.jdbc.driver.OracleDriver"
+		p:url="jdbc:oracle:thin:@192.168.0.252:1521:orcl"
+		p:username="git04"
+		p:password="git04"
+	/>
+ -->
+ 
+ 	<bean id="memberDAO" class="member.model.dao.MemberDAOImpl">
+		<property name="sqlSession" ref="sqlSession"/>
+	</bean>
+
+	<context:component-scan base-package="member.controller.bean" />	
+	
+<!-- <Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" />  -->
+
+	
+</beans>

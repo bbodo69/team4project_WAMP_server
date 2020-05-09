@@ -1,0 +1,16 @@
+@charset "UTF-8";
+
+#div_table_debate{
+	width: 600px; background : yellow; text-align: center;
+}
+
+#div_pageNumber{
+
+	position: absolute; left: 50%; margin: 50%;
+	background : black;
+	text-size: 50;
+}
+
+#header{
+	width: 600px; background : black;
+}

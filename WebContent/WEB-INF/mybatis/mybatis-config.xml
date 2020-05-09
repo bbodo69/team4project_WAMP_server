@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+  
+  <!-- mybatis 설정 xml 파일 -->
+  <configuration>  
+  
+  	<!-- typeAlias 세팅 : sql에서 자주 사용하는 (DTO)클래스 경로 줄여 쓰기 위해 지정-->
+ 
+  	<typeAliases>
+  		<typeAlias type="debate.model.vo.DebateVO" alias="debateVO" />
+  		<typeAlias type="issue.model.vo.IssueVO" alias="issueVO"/>
+  		<typeAlias type="main.model.vo.MainVO" alias="mainVO"/>
+  		<typeAlias type="member.model.vo.MemberVO" alias="memberVO"/>
+		<typeAlias type="commitmentboard.model.vo.CommitmentBoardVO" alias="commitmentVO"/>
+  	</typeAliases>
+  	  
+  	<!-- 매퍼의 경로 세팅 : sql 쿼리문이 작성되는 xml 파일들의 경로를 설정 -->
+   	
+  	<mappers>
+  		<mapper resource="/sql/commitmentSQL.xml"/>
+  		<mapper resource="/sql/debateSQL.xml" />
+  		<mapper resource="/sql/issueSQL.xml" />
+  		<mapper resource="/sql/memberSQL.xml" />
+  		<mapper resource="/sql/requestSQL.xml" />
+  		<mapper resource="/sql/mainSQL.xml" />
+  	</mappers>  
+ 
+  </configuration>

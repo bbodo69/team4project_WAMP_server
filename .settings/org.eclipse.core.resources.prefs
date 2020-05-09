@@ -1,0 +1,6 @@
+eclipse.preferences.version=1
+encoding//src/commitment/controller/bean=UTF-8
+encoding//src/debate/controller/bean/DebateBean.java=UTF-8
+encoding//src/debate/model/dao/DebateDAOImple.java=UTF-8
+encoding//src/member/controller/bean/MemberBean.java=UTF-8
+encoding//src/member/model/dao/MemberDAOImpl.java=UTF-8

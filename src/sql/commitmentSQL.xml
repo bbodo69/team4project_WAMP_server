@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="commitment">
+	<!-- 전체 게시글 가져오기 -->
+	<select id="countAll" resultType="int">
+		select count(*) from Com
+	</select>
+	<!-- 글 쓰고 저장하기 -->
+	<insert id="insertArticle" parameterType="commitmentVO">
+		insert into Com(num, name, party, local, content, url, photo) 
+		values(Com_seq.nextval, #{name}, #{party}, #{local}, #{content}, #{url}, #{photo})
+	</insert>	
+	<!-- 게시글 num값 중 최대 값 구하기 -->
+	<select id="maxNum" resultType="String">
+		select max(num) from Com
+	</select>
+	<!-- 게시글 한개 가져오기 -->
+	<select id="selectOne" parameterType="int" resultType="commitmentVO">
+		select * from Com where num=#{value}
+	</select>
+	<!-- 범위에 맞게 게시글 가져오기 -->
+	<select id="selectAll" parameterType="hashmap" resultType="commitmentVO">
+	<!-- r이후 반드시 띄어쓰기를 넣어줘야 쿼리 오류가 안난다.  -->
+		<![CDATA[
+	    select num, name, party, local, content, url, photo, r 
+	    from (select num, name, party, local, content, url, photo, rownum r 
+	    from (select num, name, party, local, content, url, photo 
+	    from Com order by num desc)) 
+	    where r >= #{start} and r <= #{end}
+	    ]]>
+	</select>
+	<select id="selectNum" parameterType="int" resultType="commitmentVO">
+		select num from Com where num=#{num}
+	</select>
+	<!-- 게시글 수정하기 -->
+	<update id="updateArticle" parameterType="commitmentVO">
+		update Com set name=#{name}, party=#{party}, local=#{local}, content=#{content}, url=#{url}, photo=#{photo} where num=#{num}
+	</update>
+	<!-- 게시글 삭제하기 -->
+	<delete id="deleteArticle" parameterType="int" >
+		delete from Com where num=#{num} 
+	</delete>
+	<!-- url만 꺼내오기 -->
+	<select id="getUrl" parameterType="int" resultType="String">
+		select url from Com where num=#{num}	
+	</select>
+	<!-- 수정을 위해 이름 한개만 꺼내오기 -->
+	<select id="selectName" parameterType="commitmentVO" resultType="string">
+		select name from Com where num=#{num}
+	</select>
+	
+	<select id="getList" resultType="commitmentVO">
+		<![CDATA[
+  		select * from com order by num desc limit 0, 5
+  		]]>
+  	</select>
+</mapper>

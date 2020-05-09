@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="main">
+  	
+  	<select id="debateArticle" resultType="mainVO" parameterType="int">
+  		select sub from debate where (ok+nok)=#{max}
+  	</select>
+  	
+  	<select id="countMaxDebateArticle" resultType="int">
+  		select max(ok+nok) from debate
+  	</select>
+  	
+  	<select id="okMax" resultType="int" parameterType="int">
+  		select ok from debate where (ok+nok)=#{num}
+  	</select>
+  	
+  	<select id="NokMax" resultType="int" parameterType="int">
+  		select nok from debate where (ok+nok)=#{num}
+  	</select>
+  	
+  </mapper>
