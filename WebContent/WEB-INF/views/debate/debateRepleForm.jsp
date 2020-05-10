@@ -314,30 +314,34 @@ function topView(){
   			
             if(data.length > 0){
 				for(i=0; i<data.length; i++){	 
-		            if(data[i] == data[0]){
+		            if((data[i] == data[0]) && (data[0].favorite != 0)){
 						html += "<blockquote><h2><div class='text-primary'>";
-					}else if(data[i] == data[1]){
+						html += "<strong><h5>글쓴이 : " + data[i].writer + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;작성날짜 :" + data[i].reg + "</strong>";
+			            html +=	'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" class="btn btn-default" aria-label="Left Align" onClick="#"><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button>&nbsp;&nbsp;' + data[i].favorite;
+			            html +=	'&nbsp;&nbsp;<button type="button" class="btn btn-default" aria-label="Left Align" onClick="#"><span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>&nbsp;&nbsp;' + data[i].hate + '</h5>';
+			            html += "<div>"+data[i].content+"</div>";
+			            html += "</div>";
+			            html += "</div></h2></blockquote>";
+					}else if((data[i] == data[1]) && (data[1].hate != 0)){
 						html += "<blockquote><h2><div class='text-danger'>";
+						html += "<strong><h5>글쓴이 : " + data[i].writer + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;작성날짜 :" + data[i].reg + "</strong>";
+			            html +=	'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" class="btn btn-default" aria-label="Left Align" onClick="#"><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button>&nbsp;&nbsp;' + data[i].favorite;
+			            html +=	'&nbsp;&nbsp;<button type="button" class="btn btn-default" aria-label="Left Align" onClick="#"><span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>&nbsp;&nbsp;' + data[i].hate + '</h5>';
+			            html += "<div>"+data[i].content+"</div>";
+			            html += "</div>";
+			            html += "</div></h2></blockquote>";
 						/*
 						html += "<blockquote class='blockquote-reverse'><h2>";
 						*/
+					}else{
+						html += ""
 					}
-		            
-		            html += "<strong><h5>글쓴이 : " + data[i].writer + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;작성날짜 :" + data[i].reg + "</strong>";
-		            html +=	'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" class="btn btn-default" aria-label="Left Align" onClick="#"><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button>&nbsp;&nbsp;' + data[i].favorite;
-		            html +=	'&nbsp;&nbsp;<button type="button" class="btn btn-default" aria-label="Left Align" onClick="#"><span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>&nbsp;&nbsp;' + data[i].hate + '</h5>';
-		            html += "<div>"+data[i].content+"</div>";
-		            html += "</div>";
-		            
-		            if(data[i].ok == 1 || data[i].ok == -1){
-		            	html += "</div></h2></blockquote>";
-		            }else{
-		            	html += "</div></h3></footer></blockquote>";
-		            }
+		           
 				}
             }else{
             	html += ""
             }
+            
             $("#list_length").html(list_length);
             $("#topView").html(html);
         },
